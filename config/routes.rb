@@ -8,4 +8,5 @@ Rails.application.routes.draw do
   post "/uploads/abort", to: "uploads#abort"
 
   delete "/uploads/destroy", to: "uploads#destroy"
+  post "transcode", to: "transcode#create"
 end
