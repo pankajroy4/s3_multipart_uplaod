@@ -1,10 +1,14 @@
 require 'aws-sdk-mediaconvert'
 
 class MediaConvertService
+  def self.call(key)
+    self.new(key).submit_job
+  end
+
   def initialize(input_s3_key)
     @input_key = input_s3_key
     @output_bucket = ENV['AWS_BUCKET_NAME']
-    @template_name = 'rails_default_transcode' # Replace with your real template name
+    @template_name = 'rails_default_transcode'
   end
 
   def submit_job
