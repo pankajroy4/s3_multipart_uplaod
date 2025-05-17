@@ -2,7 +2,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static targets = ["file", "progress", "button", "cancel"];
+  static targets = ["file", "progress", "button", "cancel", "percentage", "progressWrapper"];
   connect() {
     this.controller = null;
     this.uploadAborted = false;
@@ -12,6 +12,7 @@ export default class extends Controller {
     this.buttonTarget.disabled = true;
     this.buttonTarget.textContent = "Uploading...";
     this.cancelTarget.classList.remove("hidden");
+    this.progressWrapperTarget.classList.remove("hidden");
 
     this.controller = new AbortController();
     this.uploadAborted = false;
@@ -54,7 +55,10 @@ export default class extends Controller {
         const etag = response.headers.get("ETag");
         etags.push({ part_number: i + 1, etag });
 
-        this.progressTarget.value = ((i + 1) / totalParts) * 100;
+        const percent = Math.round(((i + 1) / totalParts) * 100);
+        this.progressTarget.value = percent;
+        this.percentageTarget.textContent = `${percent}%`;
+        // this.progressTarget.style.width = `${percent}%`;  //For custom progress bar
       }
 
       await this.postJSON("/uploads/complete", {
@@ -98,6 +102,8 @@ export default class extends Controller {
     this.fileTarget.value = "";
     this.progressTarget.value = 0;
     this.cancelTarget.classList.add("hidden");
+    this.percentageTarget.textContent = "0%";
+    this.progressWrapperTarget.classList.add("hidden");
   }
 
   getCSRFToken() {

@@ -13,8 +13,20 @@
       Cancel Upload
     </button>
 
-    <progress max="100" value="0" data-uploader-target="progress" class="w-full h-3 mt-6 rounded bg-gray-200 dark:bg-gray-700 [&::-webkit-progress-bar]:rounded [&::-webkit-progress-value]:rounded [&::-webkit-progress-value]:bg-blue-500"
-    ></progress>
+    <!-- Custom progess war.
+    <div data-uploader-target="progressWrapper" class="relative w-full h-6 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden mt-6 hidden">
+      <div data-uploader-target="progress" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"
+      ></div>
+      <span data-uploader-target="percentage" class="absolute inset-0 flex items-center justify-center text-white font-medium text-sm">0%</span>
+    </div>
+    -->
+
+    <!-- Native progress bar -->
+    <div data-uploader-target="progressWrapper" class="w-full mt-6 hidden flex items-center space-x-2">
+      <progress data-uploader-target="progress" max="100" value="0" class="w-full h-4 rounded bg-gray-200 dark:bg-gray-700 [&::-webkit-progress-bar]:rounded [&::-webkit-progress-value]:rounded [&::-webkit-progress-value]:bg-blue-500"
+      ></progress>
+      <span data-uploader-target="percentage" class="text-sm text-gray-700 dark:text-gray-200">0%</span>
+    </div>
   </div>
 
   <div class="w-full max-w-4xl" data-controller="documents">
