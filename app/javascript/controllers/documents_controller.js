@@ -30,7 +30,7 @@ export default class extends Controller {
   renderFile(file) {
     const div = document.createElement("div");
     div.className =
-      "flex items-start justify-between bg-gray-800 p-3 rounded text-white shadow";
+      "file-entry flex items-start justify-between bg-gray-800 p-3 rounded text-white shadow";
 
     const fileIconSVG = `
       <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,24 +56,30 @@ export default class extends Controller {
       <div class="flex items-center">
         ${preview}
         <div>
-          <a href="${
-            file.url
-          }" target="_blank" class="text-blue-400 hover:underline font-semibold">${
-      file.filename
-    }</a>
+          <a href="${file.url}" target="_blank" class="text-blue-400 hover:underline font-semibold">${file.filename}</a>
           <div class="text-sm text-gray-400">
-            ${(file.size / 1024).toFixed(1)} KB • ${new Date(
-      file.created_at
-    ).toLocaleString()}
+            ${(file.size / 1024).toFixed(1)} KB • ${new Date(file.created_at).toLocaleString()}
           </div>
         </div>
       </div>
-      <button 
-        class="ml-4 text-red-400 hover:text-red-300 text-sm"
-        data-action="click->documents#delete"
-        data-key="${file.key}">
-        Delete
-      </button>
+
+      <div class="ml-4 flex flex-col space-y-1 text-sm">
+        ${file.type && file.type.startsWith("video/")
+        ? `<button 
+                class="ml-2 py-1 text-green-400 hover:text-green-300 text-sm cursor-pointer"
+                data-action="click->documents#transcode"
+                data-key="${file.key}">
+                  Transcode
+               </button>`
+        : ""
+      }
+        <button 
+          class="text-red-400 py-1 hover:text-red-300 cursor-pointer"
+          data-action="click->documents#delete"
+          data-key="${file.key}">
+          Delete
+        </button>
+      </div>
     `;
 
     this.listTarget.appendChild(div);
@@ -98,7 +104,9 @@ export default class extends Controller {
 
       if (!res.ok) throw new Error("Failed to delete file");
 
-      btn.closest("div").remove();
+      // btn.closest("div").remove();
+      btn.closest(".file-entry").remove();
+
     } catch (err) {
       btn.textContent = "Error";
       btn.classList.add("text-yellow-400");
@@ -106,9 +114,44 @@ export default class extends Controller {
     }
   }
 
+  async transcode(event) {
+    const button = event.currentTarget;
+    const key = button.dataset.key;
+
+    button.textContent = "Transcoding...";
+    button.disabled = true;
+    button.classList.remove("text-green-400", "text-red-400", "text-blue-400");
+    button.classList.add("text-yellow-400");
+
+    try {
+      const res = await fetch("/transcode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": this.getCSRFToken(),
+        },
+        body: JSON.stringify({ key }),
+        credentials: "same-origin",
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        button.textContent = "Started";
+        button.classList.remove("text-yellow-400");
+        button.classList.add("text-blue-400");
+      } else {
+        throw new Error(data.error || "Transcoding failed");
+      }
+    } catch (err) {
+      console.error("Transcoding error:", err);
+      button.textContent = "Error";
+      button.classList.remove("text-yellow-400");
+      button.classList.add("text-red-400");
+    }
+  }
+
   getCSRFToken() {
-    return document
-      .querySelector('meta[name="csrf-token"]')
-      .getAttribute("content");
+    return document.querySelector('meta[name="csrf-token"]').getAttribute("content");
   }
 }
