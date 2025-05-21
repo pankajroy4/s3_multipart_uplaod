@@ -1,150 +1,5 @@
-// // Connects to data-controller="uploader"
-// import { Controller } from "@hotwired/stimulus";
-
-// export default class extends Controller {
-//   static targets = ["file", "progress", "button", "cancel", "percentage", "progressWrapper"];
-//   connect() {
-//     this.controller = null;
-//     this.uploadAborted = false;
-//   }
-
-//   async start() {
-//     this.buttonTarget.disabled = true;
-//     this.buttonTarget.textContent = "Uploading...";
-//     this.cancelTarget.classList.remove("hidden");
-//     this.progressWrapperTarget.classList.remove("hidden");
-
-//     this.controller = new AbortController();
-//     this.uploadAborted = false;
-
-//     try {
-//       const file = this.fileTarget.files[0];
-//       if (!file) return;
-
-//       const chunkSize = 5 * 1024 * 1024; // 5MB
-//       const totalParts = Math.ceil(file.size / chunkSize);
-//       this.csrfToken = this.getCSRFToken();
-
-//       const { upload_id, key } = await this.postJSON("/uploads/initiate", {
-//         filename: file.name,
-//       });
-
-//       this.currentUpload = { upload_id, key };
-
-//       const urls = await this.postJSON("/uploads/presign", {
-//         key,
-//         upload_id,
-//         parts: totalParts,
-//       });
-
-//       const etags = [];
-
-//       for (let i = 0; i < totalParts; i++) {
-//         if (this.uploadAborted) throw new Error("Upload canceled by user");
-
-//         const start = i * chunkSize;
-//         const end = Math.min(start + chunkSize, file.size);
-//         const blob = file.slice(start, end);
-
-//         const response = await fetch(urls[i].url, {
-//           method: "PUT",
-//           body: blob,
-//           signal: this.controller.signal,
-//         });
-
-//         const etag = response.headers.get("ETag");
-//         etags.push({ part_number: i + 1, etag });
-
-//         const percent = Math.round(((i + 1) / totalParts) * 100);
-//         this.progressTarget.value = percent;
-//         this.percentageTarget.textContent = `${percent}%`;
-//         // this.progressTarget.style.width = `${percent}%`;  //For custom progress bar
-//       }
-
-//       await this.postJSON("/uploads/complete", {
-//         key,
-//         upload_id,
-//         parts: etags,
-//       });
-
-//       alert("✅ Upload complete!");
-//     } catch (error) {
-//       if (this.currentUpload) {
-//         await fetch("/uploads/abort", {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//             "X-CSRF-Token": this.getCSRFToken(),
-//           },
-//           body: JSON.stringify(this.currentUpload),
-//         });
-//       }
-
-//       if (this.uploadAborted) {
-//         alert("⚠️ Upload canceled by user.");
-//       } else {
-//         alert("❌ Upload failed and aborted.");
-//         console.error(error);
-//       }
-//     } finally {
-//       this.resetUI();
-//     }
-//   }
-
-//   cancel() {
-//     this.uploadAborted = true;
-//     if (this.controller) this.controller.abort();
-//   }
-
-//   resetUI() {
-//     this.buttonTarget.disabled = false;
-//     this.buttonTarget.textContent = "Upload";
-//     this.fileTarget.value = "";
-//     this.progressTarget.value = 0;
-//     this.cancelTarget.classList.add("hidden");
-//     this.percentageTarget.textContent = "0%";
-//     this.progressWrapperTarget.classList.add("hidden");
-//   }
-
-//   getCSRFToken() {
-//     return document
-//       .querySelector('meta[name="csrf-token"]')
-//       .getAttribute("content");
-//   }
-
-//   async postJSON(url, data) {
-//     const response = await fetch(url, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "X-CSRF-Token": this.csrfToken,
-//       },
-//       body: JSON.stringify(data),
-//       credentials: "same-origin",
-//     });
-
-//     if (!response.ok) {
-//       const message = await response.text();
-//       throw new Error(`Request failed: ${message}`);
-//     }
-
-//     return await response.json();
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
-
 // Connects to data-controller="uploader"
 import { Controller } from "@hotwired/stimulus";
-
 export default class extends Controller {
   static targets = ["fileInput", "uploadList"];
 
@@ -251,15 +106,14 @@ export default class extends Controller {
       upload.progressBar.classList.add("bg-green-500");
       upload.percentText.textContent = "Upload Completed";
 
-      this.markUploadComplete(upload.id);
+      this.removeButtons(upload.id);
 
     }
   }
 
-  markUploadComplete(uploadId) {
+  removeButtons(uploadId) {
     const row = document.querySelector(`[data-id="${uploadId}"]`);
     if (!row) return;
-    // Remove pause and cancel buttons
     const pauseBtn = row.querySelector(".pause");
     const cancelBtn = row.querySelector(".cancel");
     pauseBtn?.remove();
@@ -309,18 +163,9 @@ export default class extends Controller {
       <div class="flex justify-between items-center text-sm text-gray-700 dark:text-gray-300 mt-1">
         <span class="percent">0%</span>
         <div class="flex space-x-2">
-          <button
-            data-id="${id}"
-            class="pause px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition duration-200"
-          >
-            Pause
-          </button>
-          <button
-            data-id="${id}"
-            class="cancel px-3 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition duration-200"
-          >
-            Cancel
-          </button>
+          <button data-id="${id}" class="pause px-3 py-1 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition duration-200 cursor-pointer"> Pause </button>
+
+          <button data-id="${id}" class="cancel px-3 py-1 rounded-md bg-red-600 hover:bg-red-700 text-white transition duration-200 cursor-pointer"> Cancel </button>
         </div>
       </div>
     `;
@@ -331,7 +176,6 @@ export default class extends Controller {
     return wrapper;
   }
   
-
   wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
