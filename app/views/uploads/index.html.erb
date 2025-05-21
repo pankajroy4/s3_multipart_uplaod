@@ -1,45 +1,47 @@
-<div class="min-h-screen bg-gray-100 dark:bg-gray-900 px-4 py-10 flex flex-col items-center justify-start space-y-10">
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900" >
+  <div class=" bg-gray-100 dark:bg-gray-900 flex items-center justify-center px-4 py-10" data-controller="uploader documents">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg w-full max-w-3xl space-y-6">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white text-center">S3 Multipart Upload</h2>
 
-  <div class="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-2xl shadow-lg p-8 max-w-md w-full" data-controller="uploader">
-    <h1 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-6 text-center">S3 Multipart Upload</h1>
+      <div  class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
+        <input
+          type="file"
+          multiple
+          data-uploader-target="fileInput"
+          class="file-input w-full sm:w-auto text-sm text-gray-700 dark:text-gray-300
+                file:bg-blue-600 file:hover:bg-blue-700 file:text-white
+                file:transition file:duration-200
+                file:font-medium file:px-4 file:py-2 file:rounded-md
+                dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+        />
 
-    <input type="file" data-uploader-target="file" class="block w-full text-sm text-gray-600 dark:text-gray-300 dark:bg-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:hover:text-blue-700 file:hover:bg-white file:hover:cursor-pointer file:text-blue-700 dark:file:bg-blue-900 dark:file:text-white mb-4"/>
+        <button
+          type="button"
+          data-action="uploader#selectFiles"
+          class="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-green-700
+                text-white text-sm font-medium rounded-md transition duration-200"
+        >
+          Upload Files
+        </button>
 
-    <button data-action="click->uploader#start" data-uploader-target="button" class="w-full bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white font-medium py-2 px-4 rounded-md transition duration-200">
-      Upload
-    </button>
-
-    <button data-uploader-target="cancel" data-action="click->uploader#cancel" class="w-full mt-2 text-red-600 border border-red-600 hover:cursor-pointer hover:bg-red-600 hover:text-white font-medium py-2 px-4 rounded-md transition duration-200 hidden">
-      Cancel Upload
-    </button>
-
-    <!-- Custom progess war.
-    <div data-uploader-target="progressWrapper" class="relative w-full h-6 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden mt-6 hidden">
-      <div data-uploader-target="progress" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"
-      ></div>
-      <span data-uploader-target="percentage" class="absolute inset-0 flex items-center justify-center text-white font-medium text-sm">0%</span>
-    </div>
-    -->
-
-    <!-- Native progress bar -->
-    <div data-uploader-target="progressWrapper" class="w-full mt-6 hidden flex items-center space-x-2">
-      <progress data-uploader-target="progress" max="100" value="0" class="w-full h-4 rounded bg-gray-200 dark:bg-gray-700 [&::-webkit-progress-bar]:rounded [&::-webkit-progress-value]:rounded [&::-webkit-progress-value]:bg-blue-500"
-      ></progress>
-      <span data-uploader-target="percentage" class="text-sm text-gray-700 dark:text-gray-200">0%</span>
-    </div>
-  </div>
-
-  <div class="w-full max-w-4xl" data-controller="documents">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">📄 Your Uploaded Documents</h2>
-      <button data-action="click->documents#load" class="bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white text-sm py-2 px-4 rounded">
+        <button
+          data-action="click->documents#load"
+          class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700
+                text-white text-sm font-medium rounded-md transition duration-200"
+        >
           Refresh
-      </button>
-    </div>
+        </button>
+      </div>
 
-    <div 
-      data-documents-target="list" class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow overflow-y-auto max-h-180 space-y-2">
-      <p class="text-gray-500 dark:text-gray-400">Click "Refresh" to load files.</p>
+      <div class="space-y-2">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Current Uploads</h3>
+        <div data-uploader-target="uploadList" class="overflow-y-auto bg-gray-50 dark:bg-gray-700 rounded-md p-3" style="max-height: 300px;"></div>
+      </div>
+
+      <div class="space-y-2">
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200">Uploaded Files</h3>
+        <div data-documents-target="list" class="overflow-y-auto bg-gray-50 dark:bg-gray-700 rounded-md p-3" style="max-height: 300px;"></div>
+      </div>
     </div>
   </div>
 </div>
